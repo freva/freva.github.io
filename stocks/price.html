@@ -1,0 +1,105 @@
+---
+layout: stocks_filter_table
+title: Price
+dashboard_class_name: "price-dashboard"
+---
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    google.charts.load('visualization', '1.0', {'packages':['table', 'controls']});
+    jsonp("{{site.stocks_api}}?page=price&user=" + getUser(), initialize);
+  });
+
+  function initialize(data) {
+    data = data.map(function(elem, i) {
+      if (i != 0) elem[0] = new Date(elem[0]);
+      return elem;
+    });
+            
+    var date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
+    var number_formatter = new google.visualization.NumberFormat();
+    var percent_formatter = new google.visualization.NumberFormat({suffix: '%', fractionDigits: 3});
+    var color_formatter = createColorFormat(1);
+    
+    var width = data[0].length;
+    var format_data_table = function(dt) {
+      date_formatter.format(dt, 0);
+      
+      for (var i = 1; i < width; i++) {
+        if (i < width / 2) {
+          number_formatter.format(dt, i);
+        } else {
+          color_formatter.format(dt, i);
+          percent_formatter.format(dt, i);
+        }
+      }
+    }
+    
+    {% include_relative _setup_date_filters_and_aggregators.js %}
+    
+    var chart = createChart({
+      xAxis: {
+        events: {
+          setExtremes: filter,
+        },
+      },
+      
+      yAxis: {
+        tickInterval: 5,
+        labels: {
+          formatter: function () {
+            return (this.value > 0 ? '+' : '') + this.value + '%';
+          },
+        },
+      },
+      
+      plotOptions: {
+        series: {
+          compare: 'percent',
+        },
+      },
+      
+      tooltip: {
+        formatter: function() {
+           var s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
+
+           this.points.sort(function(a, b) {
+             return Math.sign(b.point.change - a.point.change);
+           }).forEach(function(point) {
+             s += '<br/><span style="color:' + point.series.color + ';font-weight:bold">' + point.series.name + '</span>: ' +
+                  '<b>' + Highcharts.numberFormat(point.y, 2) + '</b> (' + Highcharts.numberFormat(point.point.change, 2) + '%)';
+           });
+           return s;
+        },
+      },
+      
+      series: range(1, data[0].length / 2).map(function(i) {
+        var serie = data.map(function(row, j) { return j == 0 ? row[i] : [row[0].getTime(), row[i]]; });
+        return {
+          name: serie.shift(),
+          data: serie,
+        }
+      }),
+    });
+  }
+  
+  function getNumberAggregator(mode, i, width) {
+    switch(mode) {
+      case 'average':
+        return google.visualization.data.avg;
+      
+      case 'sum':
+        if (i < width / 2) {
+          return google.visualization.data.avg;
+        } else {
+          return percentAggregator;
+        }
+        
+      case 'minimum':
+        return google.visualization.data.min;
+        
+      case 'maximum':
+        return google.visualization.data.max;
+    }
+  }
+</script>

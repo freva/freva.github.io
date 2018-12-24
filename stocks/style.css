@@ -1,0 +1,124 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #ccc;
+}
+
+ul#navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+ul#navbar li.page {
+    float: left;
+}
+
+ul#navbar li.user {
+    float: right;
+}
+
+ul#navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ul#navbar li a:hover {
+    background-color: #111;
+}
+
+ul#navbar li.active {
+    background-color: #4CAF50;
+}
+
+#container {
+    width: 1420px;
+    margin: 10px auto;
+}
+
+#content {
+    background-color: #fff;
+    padding: 5px;
+    font-size: 13px;
+}
+
+#content table.dataTable thead td {
+    padding: 10px;
+}
+
+#content table.dataTable tbody td {
+    padding: 8px 5px;
+}
+
+.string-filter input {
+    padding: 1px;
+}
+
+
+#allocation_table_div table td:nth-child(1) { width: 32px; }
+#allocation_table_div table td:nth-child(3) { width: 116px; }
+#allocation_table_div table td:nth-child(4) { width: 40px; }
+#allocation_table_div table td:nth-child(5) { width: 159px; }
+#allocation_table_div table td:nth-child(6) { width: 71px; }
+
+
+.multi-column:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.two-column {
+    float: left;
+    width: 50%;
+}
+
+.three-column {
+    float: left;
+    width: 33.33%;
+}
+
+
+.price-dashboard .highcharts-line-series {
+  opacity: 0.25;
+}
+
+.price-dashboard .highcharts-series-hover {
+  opacity: 1;
+}
+
+
+#aggregators {
+  padding: 0 200px 10px;
+}
+
+.radio-group input[type="radio"] {
+  display: none;
+}
+
+.radio-group input[type="radio"] + label {
+  float: left;
+  padding: .5em 1em;
+  cursor: pointer;
+  border-right: 1px solid #28608f;
+  color: #fff;
+  background-color: #428bca;
+}
+
+.radio-group input[type="radio"] + label:first-of-type {
+  border-radius: .7em 0 0 .7em;
+}
+
+.radio-group input[type="radio"] + label:last-of-type {
+  border-radius: 0 .7em .7em 0;
+}
+
+.radio-group input[type="radio"]:checked + label {
+  background-color: #3261b2;
+}
+

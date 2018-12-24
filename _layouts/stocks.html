@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{page.title}}</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    {% for js in layout.include-js %}
+    <script type="text/javascript" src="{{js}}"></script>{% endfor %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+    function jsonp(url, callback) {
+      var callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        document.body.removeChild(script);
+        callback(data);
+      };
+
+      var script = document.createElement('script');
+      script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    function getUrlParams(query) {
+      var search = /([^&=]+)=?([^&]*)/g;
+
+      var match, urlParams = {};
+      while (match = search.exec(query.substring(1)))
+        urlParams[match[1]] = match[2];
+      return urlParams;
+    }
+
+    function getUser() {
+      return getUrlParams(window.location.search).user || "{{site.stocks_users.last}}";
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var user = getUser();
+
+      var navbar = document.getElementById("navbar");
+      for (var i = 0; i < navbar.children.length; i++) {
+        var elem = navbar.children[i];
+        var link = elem.children[0];
+        if (elem.classList.contains("page")) {
+          link.setAttribute("href", link.getAttribute("href") + window.location.search);
+        } else if (elem.classList.contains("user") && link.innerHTML.toLowerCase() === user.toLowerCase()) {
+          elem.classList.add("active");
+        }
+      }
+    }, false)
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <ul id="navbar">
+      {% assign sorted_pages = site.pages | sort: 'title' | reverse %}
+      {% for node in sorted_pages %}
+        <li class="page{% if page.url == node.url %} active{% endif %}"><a href="{{node.url}}">{{node.title}}</a></li>
+      {% endfor %}
+      
+      {% for user in site.stocks_users %}
+        <li class="user"><a href="?user={{user}}">{{user | capitalize}}</a></li>
+      {% endfor %}
+      </ul>
+      
+      <div id="content">
+        {{ content }}
+      </div>
+    </div>
+  </body>
+</html>
+

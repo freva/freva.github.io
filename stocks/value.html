@@ -1,0 +1,107 @@
+---
+layout: stocks_filter_table
+title: Value
+dashboard_class_name: "value-dashboard"
+---
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    google.charts.load('visualization', '1.0', {'packages':['table', 'controls']});
+    jsonp("{{site.stocks_api}}?page=value&user=" + getUser(), initialize);
+  });
+
+  function initialize(data) {
+    data = data.map(function(elem, i) {
+      if (i != 0) elem[0] = new Date(elem[0]);
+      return elem;
+    });
+    
+    var date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
+    var number_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
+    var color_formatter = createColorFormat(2000);
+    var sum_color_formatter = createColorFormat(10000);
+    
+    var width = data[0].length;
+    var format_data_table = function(dt) {
+      date_formatter.format(dt, 0);
+      
+      for (var i = 1; i < width; i++) {
+        number_formatter.format(dt, i);
+        if (i >= width / 2 && i < width - 2) {
+          color_formatter.format(dt, i);
+        } else if (i == width - 2) {
+          sum_color_formatter.format(dt, i);
+        }
+      }
+    }
+    
+    var profit_graph = [];
+    for (var index = 1, profit = 0; index < data.length; index++) {
+      var entry = data[index];
+      profit += entry[width - 2];
+      profit_graph.push([entry[0].getTime(), profit]);
+    }
+    
+    {% include_relative _setup_date_filters_and_aggregators.js %}
+
+    var chart = createChart({
+      xAxis: {
+        events: {
+          setExtremes: filter,
+        },
+      },
+      
+      yAxis: {
+        tickInterval: 5000,
+      },
+      
+      plotOptions: {
+        series: {
+          compare: 'value',
+        },
+      },
+      
+      tooltip: {
+        formatter: function() {
+           var s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
+
+           this.points.forEach(function(point) {
+             var color = point.y < 0 ? 'red' : 'green';
+             s += '<br/><b>' + point.series.name + ': </b>' +
+                  '<span style="color:' + point.series.color + ';font-weight:bold">' + Highcharts.numberFormat(point.y, 2) + '</span>';
+           });
+           return s;
+        },
+      },
+      
+      series: [{
+        name: 'Profit',
+        data: profit_graph,
+        color: 'green',
+        negativeColor: '#FF0000',
+      }],
+    });
+  }
+    
+  function getNumberAggregator(mode, i, width) {
+    switch(mode) {
+      case 'average':
+        return google.visualization.data.avg;
+      
+      case 'sum':
+        if (i < width / 2) {
+          return google.visualization.data.avg;
+        } else if (i < width - 1) {
+          return google.visualization.data.sum;
+        } else {
+          return percentAggregator;
+        }
+        
+      case 'minimum':
+        return google.visualization.data.min;
+        
+      case 'maximum':
+        return google.visualization.data.max;
+    }
+  }
+</script>

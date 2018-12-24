@@ -1,0 +1,31 @@
+---
+layout: stocks
+include-js:
+  - "/stocks/script.js"
+  - "https://code.highcharts.com/stock/highstock.js"
+---
+
+<div id="dashboard_div" class="{{page.dashboard_class_name}}">
+  <div id="fake_filter" style="display:none"></div>
+  <div id="graph"></div>
+  <div id="aggregators">
+    <div class="radio-group" style="float:left">
+    {% assign time_aggregators = "Daily,Weekly,Monthly,Quarterly" | split: "," %}
+    {% for ta in time_aggregators %}
+      <input type="radio" id="ta_{{ta}}" name="radio_aggregate_time" value="{{ta|downcase}}"{% if ta == time_aggregators.first %} checked{% endif %}>
+      <label for="ta_{{ta}}">{{ta}}</label>
+    {% endfor %}
+    </div>
+    <div class="radio-group" style="float:right">
+    {% assign number_aggregators = "Average,Sum,Minimum,Maximum" | split: "," %}
+    {% for na in number_aggregators %}
+      <input type="radio" id="na_{{na}}" name="radio_aggregate_number" value="{{na|downcase}}"{% if na == number_aggregators.first %} checked{% endif %}>
+      <label for="na_{{na}}">{{na}}</label>
+    {% endfor %}
+    </div>
+    <div style="clear:both"></div>
+  </div>
+  <div id="value_table_div"></div>
+</div>
+
+{{content}}

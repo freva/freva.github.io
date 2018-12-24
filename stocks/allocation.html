@@ -1,0 +1,146 @@
+---
+layout: stocks
+title: Allocation
+---
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    google.charts.load('visualization', '1.0', {'packages': ['table', 'treemap', 'corechart', 'controls', 'geochart']});
+    jsonp("{{site.stocks_api}}?page=allocation&user=" + getUser(), initialize);
+  });
+
+  var treemap_options = {
+    height: 500,
+    generateTooltip: showSectorTooltip
+  }
+  
+  var geochart_options = {
+    colorAxis: {colors: ['red', 'yellow', 'green']},
+    legend: 'none',
+    tooltip: {
+      //isHtml: true,
+    },
+  }
+  
+  var allocation_by_sector;
+  
+  function initialize(allocation) {      
+    var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+    var country_geochart = new google.visualization.GeoChart(document.getElementById('country_geochart_div'));
+    var sector_treemap = new google.visualization.TreeMap(document.getElementById('sector_treemap_div'));
+    var number_formatter = new google.visualization.NumberFormat();
+
+    var company_filter = new google.visualization.ControlWrapper({
+      controlType: 'StringFilter',
+      containerId: 'company_filter_div',
+      options: {
+        filterColumnIndex: 0,
+        matchType: 'any',
+        ui: {
+          label: '',
+          cssClass: 'string-filter',
+        }
+      },
+    });
+    
+    var country_picker = new google.visualization.ControlWrapper({
+      controlType: 'CategoryFilter',
+      containerId: 'country_picker_div',
+      options: {
+        filterColumnIndex: 2,
+        ui: {
+          label: '',
+          allowTyping: false,
+          caption : 'Country',
+          selectedValuesLayout: 'aside',
+        }
+      }
+    });
+    
+    var sector_picker = new google.visualization.ControlWrapper({
+      controlType: 'CategoryFilter',
+      containerId: 'sector_picker_div',
+      options: {
+        filterColumnIndex: 4,
+        ui: {
+          label: '',
+          allowTyping: false,
+          caption : 'Sector',
+          selectedValuesLayout: 'aside',
+        },
+      }
+    });
+    
+    var table = new google.visualization.ChartWrapper({
+      chartType: 'Table',
+      containerId: 'allocation_table_div',
+      options: {
+        allowHtml: true,
+        showRowNumber: true,
+        width: 700,
+        sortAscending: false,
+        sortColumn: 4,
+        page: 'enable',
+        pageSize: 100,
+      },
+      view: {
+        columns: [0, 2, 3, 4, 5]
+      },
+    });
+    
+    google.visualization.events.addListener(table, 'ready', function() {
+      allocation_by_sector = google.visualization.data.group(table.getDataTable(), [4], [
+        { aggregation: function(a) { return 'Sector'; }, column: 5, type: 'string'}, 
+        { aggregation: google.visualization.data.sum, column: 5, type: 'number' }]);
+      number_formatter.format(allocation_by_sector, 2);
+      allocation_by_sector.addRows([['Sector', null, null]]);
+      sector_treemap.draw(allocation_by_sector, treemap_options);
+      
+      var allocation_by_country_code = google.visualization.data.group(
+        table.getDataTable(), [1], [{ aggregation: logSum, column: 5, type: 'number' }, { aggregation: formattedSum, column: 5, type: 'string' }]);
+      allocation_by_country_code.setColumnProperties(2, {role: 'tooltip', p: {html: true}});
+      country_geochart.draw(allocation_by_country_code, geochart_options);
+      
+      document.querySelector('.string-filter input').setAttribute('placeholder', 'Search...');
+    });
+    
+    var data = google.visualization.arrayToDataTable(allocation);
+    number_formatter.format(data, 5);
+    dashboard.bind([company_filter, country_picker, sector_picker], [table]);
+    dashboard.draw(data);
+  }
+  
+  function logSum(array) {
+    return Math.log(google.visualization.data.sum(array));
+  }
+  
+  function formattedSum(array) {
+    return formatNumber(google.visualization.data.sum(array));
+  }
+  
+  function formatNumber(number) {
+    return number.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1 ');
+  }
+  
+  function showSectorTooltip(row, size, value) {
+    return '<div style="background:#fff; padding:5px; border-style:solid">' +
+           '<b>' + allocation_by_sector.getValue(row, 0) + '</b><br/>' + formatNumber(size) + '</div>';
+  }
+</script>
+
+<div id="dashboard_div">
+  <div class="multi-column">
+    <div id="company_filter_div" class="three-column"></div>
+    <div id="country_picker_div" class="three-column"></div>
+    <div id="sector_picker_div" class="three-column"></div>
+  </div>
+  
+  <div class="multi-column" style="margin-top: 5px;">
+    <div id="allocation_table_div" class="two-column"></div>
+    <div class="two-column">
+      <div id="country_geochart_div"></div>
+      <div id="sector_treemap_div"></div>
+    </div>
+  </div>
+</div>
+
