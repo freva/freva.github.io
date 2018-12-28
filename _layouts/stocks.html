@@ -32,7 +32,7 @@
     }
 
     function getUser() {
-      return getUrlParams(window.location.search).user || "{{site.stocks_users.last}}";
+      return getUrlParams(window.location.search).user || "{{site.stocks.users.last}}";
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -56,10 +56,12 @@
       <ul id="navbar">
       {% assign sorted_pages = site.pages | sort: 'title' | reverse %}
       {% for node in sorted_pages %}
+        {% if node.path contains 'stocks/' %}
         <li class="page{% if page.url == node.url %} active{% endif %}"><a href="{{node.url}}">{{node.title}}</a></li>
+        {% endif %}
       {% endfor %}
       
-      {% for user in site.stocks_users %}
+      {% for user in site.stocks.users %}
         <li class="user"><a href="?user={{user}}">{{user | capitalize}}</a></li>
       {% endfor %}
       </ul>

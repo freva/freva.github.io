@@ -7,7 +7,7 @@ dashboard_class_name: "value-dashboard"
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     google.charts.load('visualization', '1.0', {'packages':['table', 'controls']});
-    jsonp("{{site.stocks_api}}?page=value&user=" + getUser(), initialize);
+    jsonp("{{site.stocks.api_url}}?page=value&user=" + getUser(), initialize);
   });
 
   function initialize(data) {
