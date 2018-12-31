@@ -3,7 +3,7 @@ google:
     api_key: "AIzaSyAsrXACLOnFFX3mRkCxpscZDQ9b38CNMb0"
 
 travel:
-  api_url: "https://script.google.com/macros/s/AKfycbyI1AnSQcInkfz9MuX4JocClFAVHPdzWT-PAVKRwTvsgN3EPhw/exec"
+  api_url: "https://script.google.com/macros/s/AKfycbwiTXVqYSdzt7MCiR4hAfrf1-o96HOhAEnv_dWGx4k/dev"
 
 stocks:
   api_url: "https://script.google.com/macros/s/AKfycbxzGCTgYDvkLGnUrbQpc7V1FxNojnNN3WBTcprX/exec"

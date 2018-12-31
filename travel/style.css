@@ -1,0 +1,50 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ccc;
+  height: 100%;
+}
+
+#container {
+  width: 1400px;
+  height: 100%;
+  margin: 10px auto;
+}
+
+#map {
+  height: calc(100% - 55px);
+  margin-bottom: 10px;
+}
+
+#input-address-search {
+  width: 400px;
+  margin: 0 auto 5px;
+  padding: 3px;
+  display: block;
+}
+
+#locationsForm {
+  width: 400px;
+}
+
+#locationsForm input[type=text] {
+  width: 100%;
+  margin: 2px 0;
+  border: 0;
+}
+
+#locationsForm input[type=submit] {
+  width: 100px;
+  margin: 0 auto;
+  display: block;
+}
+
+#locationsForm textarea {
+  width: 394px;
+  margin: 2px 0;
+  border: 0;
+}
+
+.bold {
+  font-weight: bold;
+}
