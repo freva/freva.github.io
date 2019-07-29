@@ -1,6 +1,11 @@
 
 function getTimeAggregator(mode) {
   switch(mode) {
+    case 'daily':
+      return function(date) {
+        return date;
+      }
+
     case 'weekly':
       return function(date) {
         return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate() + 1 - (date.getDay()||7)));
@@ -14,6 +19,11 @@ function getTimeAggregator(mode) {
     case 'quarterly':
       return function(date) {
         return new Date(Date.UTC(date.getFullYear(), 3 * Math.floor(date.getMonth() / 3), 1));
+      }
+
+    case 'annually':
+      return function(date) {
+        return new Date(Date.UTC(date.getFullYear(), 0, 1));
       }
   }
 }

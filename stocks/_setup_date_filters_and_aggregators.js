@@ -35,7 +35,6 @@
   var aggregator = function() {
     var selected_time_aggregate = document.querySelector('input[name=radio_aggregate_time]:checked').value;
     var selected_number_aggregate = document.querySelector('input[name=radio_aggregate_number]:checked').value;
-    if (selected_time_aggregate == 'daily') return dashboard.draw(data_table);
 
     var new_data_table = google.visualization.data.group(data_table,
       [{column: 0, modifier: getTimeAggregator(selected_time_aggregate), type: 'date'}],

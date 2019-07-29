@@ -10,7 +10,7 @@ include-js:
   <div id="graph"></div>
   <div id="aggregators">
     <div class="radio-group" style="float:left">
-    {% assign time_aggregators = "Daily,Weekly,Monthly,Quarterly" | split: "," %}
+    {% assign time_aggregators = "Daily,Weekly,Monthly,Quarterly,Annually" | split: "," %}
     {% for ta in time_aggregators %}
       <input type="radio" id="ta_{{ta}}" name="radio_aggregate_time" value="{{ta|downcase}}"{% if ta == time_aggregators.first %} checked{% endif %}>
       <label for="ta_{{ta}}">{{ta}}</label>
