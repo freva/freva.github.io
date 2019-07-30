@@ -45,3 +45,8 @@
     .forEach(function(e) { e.addEventListener('change', aggregator); });
   document.querySelectorAll('input[name=radio_aggregate_number]')
     .forEach(function(e) { e.addEventListener('change', aggregator); });
+
+  google.visualization.events.addListener(table, 'sort', function(e) {
+    table_options.sortColumn = e.column;
+    table_options.sortAscending = e.ascending;
+  });
