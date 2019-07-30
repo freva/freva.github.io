@@ -15,13 +15,15 @@ dashboard_class_name: "value-dashboard"
       if (i != 0) elem[0] = new Date(elem[0]);
       return elem;
     });
-    
+
+    var width = data[0].length;
+    var lastSum = data[data.length - 1][width / 2 - 1];
+
     var date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
     var number_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
-    var color_formatter = createColorFormat(2000);
-    var sum_color_formatter = createColorFormat(10000);
-    
-    var width = data[0].length;
+    var color_formatter = createColorFormat(lastSum / 300);
+    var sum_color_formatter = createColorFormat(lastSum / 100);
+
     var format_data_table = function(dt) {
       date_formatter.format(dt, 0);
       
