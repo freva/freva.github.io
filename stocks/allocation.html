@@ -9,12 +9,12 @@ title: Allocation
     jsonp("{{site.stocks.api_url}}?page=allocation&user=" + getUser(), initialize);
   });
 
-  var treemap_options = {
+  const treemap_options = {
     height: 500,
     generateTooltip: showSectorTooltip
   }
   
-  var geochart_options = {
+  const geochart_options = {
     colorAxis: {colors: ['red', 'yellow', 'green']},
     legend: 'none',
     tooltip: {
@@ -22,15 +22,15 @@ title: Allocation
     },
   }
   
-  var allocation_by_sector;
+  let allocation_by_sector;
   
   function initialize(allocation) {      
-    var dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
-    var country_geochart = new google.visualization.GeoChart(document.getElementById('country_geochart_div'));
-    var sector_treemap = new google.visualization.TreeMap(document.getElementById('sector_treemap_div'));
-    var number_formatter = new google.visualization.NumberFormat();
+    const dashboard = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+    const country_geochart = new google.visualization.GeoChart(document.getElementById('country_geochart_div'));
+    const sector_treemap = new google.visualization.TreeMap(document.getElementById('sector_treemap_div'));
+    const number_formatter = new google.visualization.NumberFormat();
 
-    var company_filter = new google.visualization.ControlWrapper({
+    const company_filter = new google.visualization.ControlWrapper({
       controlType: 'StringFilter',
       containerId: 'company_filter_div',
       options: {
@@ -43,7 +43,7 @@ title: Allocation
       },
     });
     
-    var country_picker = new google.visualization.ControlWrapper({
+    const country_picker = new google.visualization.ControlWrapper({
       controlType: 'CategoryFilter',
       containerId: 'country_picker_div',
       options: {
@@ -57,7 +57,7 @@ title: Allocation
       }
     });
     
-    var sector_picker = new google.visualization.ControlWrapper({
+    const sector_picker = new google.visualization.ControlWrapper({
       controlType: 'CategoryFilter',
       containerId: 'sector_picker_div',
       options: {
@@ -71,7 +71,7 @@ title: Allocation
       }
     });
     
-    var table = new google.visualization.ChartWrapper({
+    const table = new google.visualization.ChartWrapper({
       chartType: 'Table',
       containerId: 'allocation_table_div',
       options: {
@@ -88,7 +88,7 @@ title: Allocation
       },
     });
     
-    google.visualization.events.addListener(table, 'ready', function() {
+    google.visualization.events.addListener(table, 'ready', () => {
       allocation_by_sector = google.visualization.data.group(table.getDataTable(), [4], [
         { aggregation: function(a) { return 'Sector'; }, column: 5, type: 'string'}, 
         { aggregation: google.visualization.data.sum, column: 5, type: 'number' }]);
@@ -96,15 +96,15 @@ title: Allocation
       allocation_by_sector.addRows([['Sector', null, null]]);
       sector_treemap.draw(allocation_by_sector, treemap_options);
       
-      var allocation_by_country_code = google.visualization.data.group(
+      const allocation_by_country_code = google.visualization.data.group(
         table.getDataTable(), [1], [{ aggregation: logSum, column: 5, type: 'number' }, { aggregation: formattedSum, column: 5, type: 'string' }]);
       allocation_by_country_code.setColumnProperties(2, {role: 'tooltip', p: {html: true}});
       country_geochart.draw(allocation_by_country_code, geochart_options);
       
       document.querySelector('.string-filter input').setAttribute('placeholder', 'Search...');
     });
-    
-    var data = google.visualization.arrayToDataTable(allocation);
+
+    const data = google.visualization.arrayToDataTable(allocation);
     number_formatter.format(data, 5);
     dashboard.bind([company_filter, country_picker, sector_picker], [table]);
     dashboard.draw(data);

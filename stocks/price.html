@@ -12,20 +12,20 @@ dashboard_class_name: "price-dashboard"
 
   function initialize(data) {
     data = data.map(function(elem, i) {
-      if (i != 0) elem[0] = new Date(elem[0]);
+      if (i !== 0) elem[0] = new Date(elem[0]);
       return elem;
     });
             
-    var date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
-    var number_formatter = new google.visualization.NumberFormat();
-    var percent_formatter = new google.visualization.NumberFormat({suffix: '%', fractionDigits: 3});
-    var color_formatter = createColorFormat(1);
+    const date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
+    const number_formatter = new google.visualization.NumberFormat();
+    const percent_formatter = new google.visualization.NumberFormat({suffix: '%', fractionDigits: 3});
+    const color_formatter = createColorFormat(1);
     
-    var width = data[0].length;
-    var format_data_table = function(dt) {
+    const width = data[0].length;
+    const format_data_table = dt => {
       date_formatter.format(dt, 0);
       
-      for (var i = 1; i < width; i++) {
+      for (let i = 1; i < width; i++) {
         if (i < width / 2) {
           number_formatter.format(dt, i);
         } else {
@@ -37,7 +37,7 @@ dashboard_class_name: "price-dashboard"
     
     {% include_relative _setup_date_filters_and_aggregators.js %}
     
-    var chart = createChart({
+    const chart = createChart({
       xAxis: {
         events: {
           setExtremes: filter,
@@ -61,20 +61,20 @@ dashboard_class_name: "price-dashboard"
       
       tooltip: {
         formatter: function() {
-           var s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
+           let s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
 
-           this.points.sort(function(a, b) {
-             return Math.sign(b.point.change - a.point.change);
-           }).forEach(function(point) {
-             s += '<br/><span style="color:' + point.series.color + ';font-weight:bold">' + point.series.name + '</span>: ' +
-                  '<b>' + Highcharts.numberFormat(point.y, 2) + '</b> (' + Highcharts.numberFormat(point.point.change, 2) + '%)';
-           });
+           this.points
+             .sort((a, b) => Math.sign(b.point.change - a.point.change))
+             .forEach(point => {
+                 s += '<br/><span style="color:' + point.series.color + ';font-weight:bold">' + point.series.name + '</span>: ' +
+                      '<b>' + Highcharts.numberFormat(point.y, 2) + '</b> (' + Highcharts.numberFormat(point.point.change, 2) + '%)';
+             });
            return s;
         },
       },
       
-      series: range(1, data[0].length / 2).map(function(i) {
-        var serie = data.map(function(row, j) { return j == 0 ? row[i] : [row[0].getTime(), row[i]]; });
+      series: range(1, data[0].length / 2).map(i => {
+        const serie = data.map(function(row, j) { return j === 0 ? row[i] : [row[0].getTime(), row[i]]; });
         return {
           name: serie.shift(),
           data: serie,

@@ -11,42 +11,42 @@ dashboard_class_name: "value-dashboard"
   });
 
   function initialize(data) {
-    data = data.map(function(elem, i) {
-      if (i != 0) elem[0] = new Date(elem[0]);
+    data = data.map((elem, i) => {
+      if (i !== 0) elem[0] = new Date(elem[0]);
       return elem;
     });
 
-    var width = data[0].length;
-    var lastSum = data[data.length - 1][width / 2 - 1];
+    const width = data[0].length;
+    const lastSum = data[data.length - 1][width / 2 - 1];
 
-    var date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
-    var number_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
-    var color_formatter = createColorFormat(lastSum / 300);
-    var sum_color_formatter = createColorFormat(lastSum / 100);
+    const date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
+    const number_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
+    const color_formatter = createColorFormat(lastSum / 300);
+    const sum_color_formatter = createColorFormat(lastSum / 100);
 
-    var format_data_table = function(dt) {
+    const format_data_table = dt => {
       date_formatter.format(dt, 0);
       
-      for (var i = 1; i < width; i++) {
+      for (let i = 1; i < width; i++) {
         number_formatter.format(dt, i);
         if (i >= width / 2 && i < width - 2) {
           color_formatter.format(dt, i);
-        } else if (i == width - 2) {
+        } else if (i === width - 2) {
           sum_color_formatter.format(dt, i);
         }
       }
     }
     
-    var profit_graph = [];
-    for (var index = 1, profit = 0; index < data.length; index++) {
-      var entry = data[index];
+    const profit_graph = [];
+    for (let index = 1, profit = 0; index < data.length; index++) {
+      const entry = data[index];
       profit += entry[width - 2];
       profit_graph.push([entry[0].getTime(), profit]);
     }
     
     {% include_relative _setup_date_filters_and_aggregators.js %}
 
-    var chart = createChart({
+    const chart = createChart({
       xAxis: {
         events: {
           setExtremes: filter,
@@ -65,10 +65,10 @@ dashboard_class_name: "value-dashboard"
       
       tooltip: {
         formatter: function() {
-           var s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
+           let s = '<b>Date: ' + Highcharts.dateFormat('%Y/%m/%d', new Date(this.x)) + '</b><br/>';
 
            this.points.forEach(function(point) {
-             var color = point.y < 0 ? 'red' : 'green';
+             const color = point.y < 0 ? 'red' : 'green';
              s += '<br/><b>' + point.series.name + ': </b>' +
                   '<span style="color:' + point.series.color + ';font-weight:bold">' + Highcharts.numberFormat(point.y, 2) + '</span>';
            });
