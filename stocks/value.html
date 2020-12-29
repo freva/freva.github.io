@@ -20,7 +20,8 @@ dashboard_class_name: "value-dashboard"
     const lastSum = data[data.length - 1][width / 2 - 1];
 
     const date_formatter = new google.visualization.DateFormat({pattern: 'yyyy/MM/dd', timeZone: 0});
-    const number_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
+    const integer_formatter = new google.visualization.NumberFormat({fractionDigits: 0});
+    const decimal_formatter = new google.visualization.NumberFormat({fractionDigits: 2});
     const color_formatter = createColorFormat(lastSum / 300);
     const sum_color_formatter = createColorFormat(lastSum / 100);
 
@@ -28,7 +29,9 @@ dashboard_class_name: "value-dashboard"
       date_formatter.format(dt, 0);
       
       for (let i = 1; i < width; i++) {
-        number_formatter.format(dt, i);
+        if (i === width - 1) decimal_formatter.format(dt, i);
+        else integer_formatter.format(dt, i);
+
         if (i >= width / 2 && i < width - 2) {
           color_formatter.format(dt, i);
         } else if (i === width - 2) {
