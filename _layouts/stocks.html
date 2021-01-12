@@ -23,24 +23,37 @@
       document.body.appendChild(script);
     }
 
-    function getUser() {
-      return new URLSearchParams(window.location.search).get('user') || "{{site.stocks.users.last}}";
+    function jsonpPage(page, callback) {
+      const user = new URLSearchParams(window.location.search).get('user');
+      const url = '{{site.stocks.api_url}}?page=' + page + (user ? '&user=' + user : '');
+      jsonp(url, ({data, user, allUsers}) => {
+        setUser(user, allUsers);
+        callback(data);
+      });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const user = getUser();
+    function capitalize(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    }
 
+    function setUser(user, allUsers) {
       const navbar = document.getElementById("navbar");
       for (let i = 0; i < navbar.children.length; i++) {
         const elem = navbar.children[i];
         const link = elem.children[0];
         if (elem.classList.contains("page")) {
           link.setAttribute("href", link.getAttribute("href") + window.location.search);
-        } else if (elem.classList.contains("user") && link.innerHTML.toLowerCase() === user.toLowerCase()) {
-          elem.classList.add("active");
         }
       }
-    }, false)
+
+      for (const aUser of allUsers.reverse()) {
+        const li = document.createElement('li');
+        li.classList.add('user')
+        if (aUser.toLowerCase() === user.toLowerCase()) li.classList.add('active');
+        li.innerHTML = '<a href="?user=' + aUser + '">' + capitalize(aUser) + '</a>';
+        navbar.appendChild(li);
+      }
+    }
     </script>
   </head>
   <body>
@@ -51,10 +64,6 @@
         {% if node.path contains 'stocks/' %}
         <li class="page{% if page.url == node.url %} active{% endif %}"><a href="{{node.url}}">{{node.title}}</a></li>
         {% endif %}
-      {% endfor %}
-      
-      {% for user in site.stocks.users %}
-        <li class="user"><a href="?user={{user}}">{{user | capitalize}}</a></li>
       {% endfor %}
       </ul>
       

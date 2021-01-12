@@ -6,7 +6,7 @@ title: Allocation
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     google.charts.load('visualization', '1.0', {'packages': ['table', 'treemap', 'corechart', 'controls', 'geochart']});
-    jsonp("{{site.stocks.api_url}}?page=allocation&user=" + getUser(), initialize);
+    jsonpPage('allocation', initialize);
   });
 
   const treemap_options = {
