@@ -137,11 +137,11 @@ function getVaccinationByAgeGroups(kommuneId) {
                 data[match[2]].sum.total += antall;
             }
 
-            for (const { tekst, antall, provedato } of weekly) {
+            for (const { tekst, antall, fordeltPaa } of weekly) {
                 const match = tekst.replace('85 og over', '85+ år').match(textRegex);
                 if (!match) throw new Error(`Text '${tekst}' does not match regex '${textRegex}'`);
 
-                const weekNo = getWeekNumberIn2021(new Date(provedato));
+                const weekNo = getWeekNumberIn2021(new Date(fordeltPaa.split('.').reverse().join('/')));
                 data[match[2]][match[1]].weekly[weekNo] += antall;
                 data[match[2]].sum.weekly[weekNo] += antall;
             }
