@@ -50,11 +50,13 @@ async function onKommuneChange(kommuneId) {
         const population = populations[group];
         const dose1Num = vaccinations[group][1].total, dose1Pct = (100 * dose1Num / population).toFixed(2);
         const dose2Num = vaccinations[group][2].total, dose2Pct = (100 * dose2Num / population).toFixed(2);
+        const dose3Num = vaccinations[group][3].total, dose3Pct = (100 * dose3Num / population).toFixed(2);
 
-        const description = `Age: ${group} | Population: ${population} | Dose 1: ${dose1Num} (${dose1Pct}%) | Dose 2: ${dose2Num} (${dose2Pct}%)`;
+        const description = `Age: ${group} | Population: ${population} | Dose 1: ${dose1Num} (${dose1Pct}%) | Dose 2: ${dose2Num} (${dose2Pct}%) | Dose 3: ${dose3Num} (${dose3Pct}%)`;
         const dataGroup = addElement(barChart, 'div', {'data-group': description});
         addElement(dataGroup, 'div', {class: 'bar dose1', style: `width:${dose1Pct}%;`, 'data-percent': dose1Pct});
         addElement(dataGroup, 'div', {class: 'bar dose2', style: `width:${dose2Pct}%;`, 'data-percent': dose2Pct});
+        addElement(dataGroup, 'div', {class: 'bar dose3', style: `width:${dose3Pct}%;`, 'data-percent': dose3Pct});
     }
     filter();
 }
@@ -117,15 +119,15 @@ function getPopulationByAgeGroups(kommuneId) {
 function getVaccinationByAgeGroups(kommuneId) {
     const today = new Date().toISOString().split('T')[0];
     let url = 'https://statistikk.fhi.no/api/Sysvak/gruppering?diagnoseKodeListe=COVID_19&tabell=diagnose' +
-                '&doseKodeListe=01,02&aldersgruppeKodeListe=2,3,4,5,6,7,8,9,10,11' +
+                '&doseKodeListe=01,02,03&aldersgruppeKodeListe=2,3,4,5,6,7,8,9,10,11' +
                 '&fraDag=2020-12-15&tilDag=' + today;
     if (kommuneId !== all) url += '&kommuneKodeListe=' + kommuneId;
 
     return Promise.all([jsonp(url + '&fordeling=aar'), jsonp(url + '&fordeling=dag')])
         .then(([total, weekly]) => {
-            const textRegex = /^Covid-19, Dose ([1-2]), ([0-9-+]+) år(|, .+)$/;
+            const textRegex = /^Covid-19, Dose ([1-3]), ([0-9-+]+) år(|, .+)$/;
             const thisWeekNo = getWeekNumberIn2021(new Date());
-            const doses = ['sum', 1, 2];
+            const doses = ['sum', 1, 2, 3];
             const data = Object.fromEntries(Object.keys(groups)
                 .map(group => [group, Object.fromEntries(
                     doses.map(k => [k, {total: 0, weekly: Array(thisWeekNo + 1).fill(0)}]))

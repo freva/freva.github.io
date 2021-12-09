@@ -77,6 +77,10 @@
 	background-color: #005379
 }
 
+.bar-chart>div .bar.dose3 {
+	background-color: #962973
+}
+
 .bar-chart>div:nth-child(2) {
     margin-bottom: 50px;
 }
