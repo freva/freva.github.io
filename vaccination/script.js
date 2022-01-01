@@ -178,7 +178,7 @@ function filter() {
         if (cumulative) for (let i = 1; i < data.length; i++) data[i] += data[i - 1];
         for (let i = 0; i < data.length; i++) {
             const valuePer100 = 100 * data[i] / populations[group];
-            data[i] = {value: per100 ? valuePer100 : data[i], percent: valuePer100 / (doses === 'sum' ? 2 : 1)};
+            data[i] = {value: per100 ? valuePer100 : data[i], percent: valuePer100 / (doses === 'sum' ? 3 : 1)};
         }
 
         addElement(addElement(colorGridFirstCol, 'div', {class: 'color-grid-row value'}), 'div', {class: 'color-grid-value'}).innerHTML = group;
