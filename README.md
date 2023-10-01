@@ -1,5 +1,5 @@
 # freva.github.io
 
 ```
-docker run -ti --rm -v $(pwd):/srv/jekyll --net host jekyll/jekyll jekyll serve
+podman run -ti --rm -v $(pwd):/srv/jekyll --net host jekyll/jekyll:3 jekyll serve -P 3000
 ```
