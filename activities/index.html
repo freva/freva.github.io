@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activities</title>
+    <script src="https://npmcdn.com/@turf/turf@5.1.6/turf.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css" rel="stylesheet" />
+
+    <script src="script.js"></script>
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="map"></div>
+    <div class="filter-container">
+        <h3>Date Range</h3>
+        <div style="display: flex; gap: 5px;">
+            <input name="from" id="from" type="date" />
+            <input name="to" id="to" type="date" />
+        </div>
+
+        <h3>Activity Type</h3>
+        <ul class="filter-switch">
+            <li class="filter-switch-item">
+                <input type="radio" name="type" id="all" checked>
+                <label for="all">All</label>
+            </li>
+            <li class="filter-switch-item">
+                <input type="radio" name="type" id="run">
+                <label for="run">Run</label>
+            </li>
+            <li class="filter-switch-item">
+                <input type="radio" name="type" id="walk">
+                <label for="walk">Walk</label>
+            </li>
+            <li class="filter-switch-item">
+                <input type="radio" name="type" id="ride">
+                <label for="ride">Bike</label>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

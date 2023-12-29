@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.distance-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+}
+
+.distance-container > * {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 11px;
+    line-height: 18px;
+    display: block;
+    margin: 0;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.filter-container {
+    background: #fff;
+    padding: 5px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+}
+
+.filter-container h3 {
+    margin: 15px 0 5px;
+}
+
+.filter-switch {
+    box-sizing: border-box;
+    border-width: 0;
+    background-color: #EDF2F7;
+    border-radius: .375rem;
+    display: flex;
+    justify-content: space-around;
+    font-weight: 600;
+    padding: .125rem;
+    color: #3182CE;
+    margin: 0;
+}
+.filter-switch-item {
+    border-width: 0;
+    display: flex;
+}
+.filter-switch-item input {
+    display: none;
+}
+.filter-switch-item label {
+    box-sizing: border-box;
+    border-width: 0;
+    background-color: #FFF;
+    border-radius: .25rem;
+    font-size: .875rem;
+    padding: .25rem .5rem;
+    color: #718096;
+    cursor: pointer;
+}
+.filter-switch-item input:not(:checked) + label {
+    background-color: transparent;
+}
