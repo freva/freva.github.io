@@ -18,6 +18,7 @@ function createMap(lon, lat, zoom) {
 document.addEventListener('DOMContentLoaded', () => {
     const searchParams = new URLSearchParams(window.location.search);
     const map = createMap(...(searchParams.get('view')?.split(',')?.map(s => parseFloat(s)) ?? []));
+    const source = searchParams.get('source') ?? 'activities_valerij.jsonl';
 
     function updateView() {
         const center = map.getCenter();
@@ -29,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     map.on('load', async () => {
         let total = 0, inline = 0, too_close = 0;
-        const activities = await fetch('activities_valerij.jsonl')
+        const activities = await fetch(source)
             .then(response => response.text())
             .then(response => response
                 .split('\n')
