@@ -1,5 +1,12 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZnJldmEiLCJhIjoiY2tsOGhyZXF1MGNkbTJ1bGJudHpzaXI0ZiJ9.dlT0AHlMq5DLOU5doA7h6g';
 
+function toDuration(totalSecs) {
+    const hours   = Math.floor(totalSecs / 3600);
+    const minutes = Math.floor(totalSecs / 60) % 60;
+    const seconds = totalSecs % 60;
+    return [hours, minutes, seconds].map(v => v < 10 ? "0" + v : v).join(":");
+}
+
 function updateUrl(props) {
     const url = new URL(window.location.href);
     Object.entries(props).forEach(([key, value]) => url.searchParams.set(key, value));
@@ -18,7 +25,8 @@ function createMap(lon, lat, zoom) {
 document.addEventListener('DOMContentLoaded', () => {
     const searchParams = new URLSearchParams(window.location.search);
     const map = createMap(...(searchParams.get('view')?.split(',')?.map(s => parseFloat(s)) ?? []));
-    const source = searchParams.get('source') ?? 'activities_valerij.jsonl';
+    const source = searchParams.get('source') ?? 'trimmed_valerij.jsonl';
+    const resultsElem = document.getElementById('results');
 
     function updateView() {
         const center = map.getCenter();
@@ -29,56 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     map.on('zoomend', updateView);
 
     map.on('load', async () => {
-        let total = 0, inline = 0, too_close = 0;
         const activities = await fetch(source)
             .then(response => response.text())
             .then(response => response
                 .split('\n')
                 .filter(line => line.length > 0)
-                .map(line => JSON.parse(line))
-                .flatMap(activity => {
-                    const results = [];
-                    const allCords = activity.coords.map(([lat, lon]) => [lon, lat]);
-                    total += allCords.length;
-                    let coords = [], last;
-                    for (let i = 0; i < allCords.length; i++) {
-                        if (i === 0 || i === allCords.length - 1) {
-                            coords.push(allCords[i]);
-                            last = allCords[i];
-                            continue;
-                        }
-
-                        const distance = turf.distance(last, allCords[i]);
-                        if (distance > 0.1) { // If the distance is more than 100m from the previous point, create new line
-                            if (coords.length > 0) {
-                                results.push({...activity, coords });
-                                coords = [];
-                            }
-                        }
-
-                        const a = allCords[i - 1][0], b = allCords[i][0], c = allCords[i + 1][0];
-                        const d = allCords[i - 1][1], e = allCords[i][1], f = allCords[i + 1][1];
-                        const determinant = Math.abs((d - e) * (a - c) - (d - f) * (a - b));
-                        // Skip points that are (almost) in line with the immediately previous and immediately next
-                        // point to this one
-                        if (determinant < 1e-10 && distance < 0.09) {
-                            inline++;
-                            continue;
-                        }
-
-                        if (distance < 0.005) { // Skip points less than 5m from the previous point
-                            too_close++;
-                            continue;
-                        }
-
-                        coords.push(allCords[i]);
-                        last = allCords[i];
-                    }
-                    if (coords.length > 0)
-                        results.push({ ...activity, coords });
-                    return results;
-                }));
-        console.log('points', { total, inline, too_close })
+                .map(line => JSON.parse(line)));
 
         map.addSource('activities', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
         map.addLayer({ id: 'lines', type: 'line', source: 'activities' });
@@ -93,24 +57,24 @@ document.addEventListener('DOMContentLoaded', () => {
                            type === 'walk' ? activity => activity.type === 'walk' || activity.type === 'hike' :
                                              activity => activity.type === type;
 
-            let distance = 0, points = 0, activitiesStart = new Set();
+            let distance = 0, duration = 0, numActivities = 0;
             const features = activities
                 .filter(activity => filter(activity) && activity.start > from && activity.start < to)
-                .map(activity => {
-                    activitiesStart.add(activity.start);
+                .flatMap(activity => {
+                    numActivities++;
                     distance += activity.distance;
-                    points += activity.coords.length;
-                    return activity;
+                    duration += activity.duration;
+                    return activity.coords;
                 })
-                .map(activity => ({
+                .map(coordinates => ({
                     type: 'Feature',
                     geometry: {
                         type: 'LineString',
-                        coordinates: activity.coords,
+                        coordinates,
                     }
                 }));
-            console.log('displaying', { activities: activitiesStart.size, distance, points });
             map.getSource('activities').setData({ type: 'FeatureCollection', features });
+            results.innerHTML = `${numActivities} activities: ${(distance / 1000).toFixed(1)}km in ${toDuration(duration)}`;
         }
 
         document.querySelectorAll('input').forEach(element => {
