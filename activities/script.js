@@ -1,5 +1,12 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZnJldmEiLCJhIjoiY2tsOGhyZXF1MGNkbTJ1bGJudHpzaXI0ZiJ9.dlT0AHlMq5DLOU5doA7h6g';
 
+const colors = {
+    run: '#000000',
+    walk: '#9B59B6',
+    hike: '#3498DB',
+    ride: '#C70039',
+};
+
 function toDuration(totalSecs) {
     const hours   = Math.floor(totalSecs / 3600);
     const minutes = Math.floor(totalSecs / 60) % 60;
@@ -62,7 +69,14 @@ document.addEventListener('DOMContentLoaded', () => {
         activities.forEach(activity => allTypes.add(activity.type));
 
         map.addSource('activities', { type: 'geojson', data: { type: 'FeatureCollection', features: [] }});
-        map.addLayer({ id: 'lines', type: 'line', source: 'activities' });
+        map.addLayer({
+            id: 'lines',
+            type: 'line',
+            source: 'activities',
+            paint: {
+                'line-color': ['get', 'color']
+            }
+        });
 
         function loadStateFromUrl() {
             const searchParams = new URLSearchParams(window.location.search);
@@ -74,14 +88,17 @@ document.addEventListener('DOMContentLoaded', () => {
             let distance = 0, duration = 0, numActivities = 0;
             const features = activities
                 .filter(activity => types.has(activity.type) && activity.start > from && activity.start < to)
-                .flatMap(activity => {
+                .map(activity => {
                     numActivities++;
                     distance += activity.distance;
                     duration += activity.duration;
-                    return activity.coords;
+                    return { coordinates: activity.coords.flatMap(s => s), color: colors[activity.type] ?? '#FFC300' };
                 })
-                .map(coordinates => ({
+                .map(({ coordinates, color }) => ({
                     type: 'Feature',
+                    properties: {
+                        color,
+                    },
                     geometry: {
                         type: 'LineString',
                         coordinates,
